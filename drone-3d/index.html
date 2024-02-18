@@ -189,40 +189,56 @@
 			}
       
 
+
       #chatBox {
-      position: fixed; /* Or absolute, depending on your requirement */
-      bottom: 20px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: white;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    #chatHeader {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    #chatContent {
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    #chatInput {
-      margin-top: 10px;
-      padding: 5px;
-      width: calc(100% - 10px); /* Adjust based on padding */
-      box-sizing: border-box;
-    }
+     position: fixed; /* Or absolute, depending on your requirement */
+     bottom: 20px;
+     right: 20px;
+     width: 300px;
+     height: 400px;
+     background-color: rgba(0, 0, 0, 0.6);
+     color: white;
+     border-radius: 8px;
+     display: flex;
+     flex-direction: column;
+     padding: 10px;
+     box-sizing: border-box;
+   }
 
 
+   #chatHeader {
+     font-weight: bold;
+     margin-bottom: 10px;
+   }
 
+
+   #chatContent {
+     flex: 1;
+     overflow-y: auto;
+   }
+
+
+   #chatInput {
+     margin-top: 10px;
+     padding: 5px;
+     width: calc(100% - 10px); /* Adjust based on padding */
+     background-color: rgba(0, 0, 0, 0.6); /* Match the chat box's opacity and color */
+     color: white; /* Match the text color of the chat box */
+     border: none; /* Remove default border */
+     border-radius: 4px; /* Optional: match the chat box's border-radius for consistency */
+     box-sizing: border-box;
+   }
+
+
+   #chatInput::placeholder {
+     color: rgba(255, 255, 255, 0.7); /* Lighter placeholder text for better readability */
+   }
+
+
+   #chatInput:focus {
+     outline: none; /* Removes the outline to keep the design clean */
+     border: 1px solid rgba(255, 255, 255, 0.8); /* Optional: adds a subtle border on focus for better visibility */
+   }
 		</style>
 	</head>
 	<body>
@@ -302,34 +318,34 @@
       async function fetchChatResponse(userMessage) {
           const url = 'https://api.together.xyz/v1/chat/completions';
           //TOGETHER API KEY
-          const apiKey = ''; // Replace with your actual API key
+          const apiKey = '6dc130236125c9ea0408389e397f422c0646f00714e2fb26abd222a9e0325aef'; // Replace with your actual API key
 
-          const headers = new Headers({
+          const headers = {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-          });
+              Authorization: `Bearer ${apiKey}`
+          };
 
           // Include chat history in the data object
           const data = {
               model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
               max_tokens: 1024,
-              messages: [...chatHistory, {role: 'user', content: userMessage}],
-              "stream_tokens": true
+              messages: [...chatHistory, {role: 'user', content: userMessage}]
           };
 
           const options = {
               method: 'POST',
-              headers,
-              body: JSON.stringify(data)
+              headers: headers,
+              body: JSON.stringify(data),
+              //mode: 'no-cors'
           };
 
 
-          const response1 = await fetchEventSource(url, {options,
-            onmessage(ev) {
-                console.log(ev.data);
-            }
-          });
-
+          // const response1 = await fetchEventSource(url, {options,
+          //   onmessage(ev) {
+          //       console.log(ev.data);
+          //   }
+          // });
+          console.log(options)
           const response = await fetch(url, options);
           const result = await response.json();
           
