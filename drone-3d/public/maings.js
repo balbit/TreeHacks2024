@@ -731,10 +731,10 @@ async function main() {
     carousel = false;
   } catch (err) {}
   const url = new URL(
-    // "nike.splat",
-    // location.href,
-    params.get("url") || "train.splat",
-    "https://huggingface.co/cakewalk/splat-data/resolve/main/"
+    "oil_rig.splat",
+    location.href,
+    // params.get("url") || "train.splat",
+    // "https://huggingface.co/cakewalk/splat-data/resolve/main/"
   );
   const req = await fetch(url, {
     mode: "cors", // no-cors, *cors, same-origin
