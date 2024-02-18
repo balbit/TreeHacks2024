@@ -1,3 +1,7 @@
+function isChatInputFocused() {
+  return document.activeElement.id === "chatInput";
+}
+
 let cameras = [
   {
     id: 0,
@@ -894,6 +898,8 @@ async function main() {
   let currentCameraIndex = 0;
 
   window.addEventListener("keydown", (e) => {
+    if (isChatInputFocused()) return; // Ignore when chat input is focused
+
     // if (document.activeElement != document.body) return;
     carousel = false;
     if (!activeKeys.includes(e.code)) activeKeys.push(e.code);
@@ -922,6 +928,7 @@ async function main() {
     }
   });
   window.addEventListener("keyup", (e) => {
+    if (isChatInputFocused()) return; // Ignore when chat input is focused
     activeKeys = activeKeys.filter((k) => k !== e.code);
   });
   window.addEventListener("blur", () => {
@@ -1135,6 +1142,8 @@ async function main() {
   let leftGamepadTrigger, rightGamepadTrigger;
 
   const frame = (now) => {
+    //if (isChatInputFocused()) return; // Modify this part to ignore input if chat is focused
+
     let inv = invert4(viewMatrix);
     let shiftKey =
       activeKeys.includes("Shift") ||

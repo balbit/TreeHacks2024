@@ -258,11 +258,44 @@
 
     <div id="chatBox">
       <div id="chatHeader">Chat</div>
-      <div id="chatContent">
-        <!-- Chat messages will go here -->
-      </div>
+      <div id="chatContent"></div>
       <input type="text" id="chatInput" placeholder="Type a message..." />
     </div>
+
+    <script>
+      document.getElementById('chatInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault(); // Prevent form submission if your input is in a form
+
+          // Get the message from the input field
+          var message = this.value.trim();
+
+          // Check if the message is not empty
+          if (message) {
+            // Display the user's message
+            var userMessageDiv = document.createElement('div');
+            userMessageDiv.textContent = 'You: ' + message;
+            userMessageDiv.style.color = 'lightblue'; // Customize the user message color
+            document.getElementById('chatContent').appendChild(userMessageDiv);
+
+            // Display a placeholder bot response
+            var botMessageDiv = document.createElement('div');
+            botMessageDiv.textContent = 'Bot: I\'m good, how are you?.';
+            botMessageDiv.style.color = 'lightgreen'; // Customize the bot message color
+            document.getElementById('chatContent').appendChild(botMessageDiv);
+
+            // Scroll to the bottom of the chat content
+            var chatContent = document.getElementById('chatContent');
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            // Clear the input field
+            this.value = '';
+          }
+        }
+      });
+
+    </script>
+
 
 	</body>
 </html>
