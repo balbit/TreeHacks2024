@@ -12,6 +12,8 @@
 			name="apple-mobile-web-app-status-bar-style"
 			content="black-translucent"
 		/>
+
+
 		<style>
 			body {
 				overflow: hidden;
@@ -263,36 +265,99 @@
     </div>
 
     <script>
-      document.getElementById('chatInput').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault(); // Prevent form submission if your input is in a form
+      let chatHistory = [];
+      function displayUserMessage(message) {
+          var userMessageDiv = document.createElement('div');
+          userMessageDiv.textContent = 'You: ' + message;
+          userMessageDiv.style.color = 'lightblue';
+          document.getElementById('chatContent').appendChild(userMessageDiv);
+          scrollToBottom();
+          
+          // Update chat history
+          chatHistory.push({
+              role: 'user',
+              content: message
+          });
+      }
 
-          // Get the message from the input field
-          var message = this.value.trim();
+      function displayBotResponse(message) {
+          var botMessageDiv = document.createElement('div');
+          botMessageDiv.textContent = 'Bot: ' + message;
+          botMessageDiv.style.color = 'lightgreen';
+          document.getElementById('chatContent').appendChild(botMessageDiv);
+          scrollToBottom();
+          
+          // Update chat history
+          chatHistory.push({
+              role: 'system', // or 'assistant' depending on the API's expected format
+              content: message
+          });
+      }
 
-          // Check if the message is not empty
-          if (message) {
-            // Display the user's message
-            var userMessageDiv = document.createElement('div');
-            userMessageDiv.textContent = 'You: ' + message;
-            userMessageDiv.style.color = 'lightblue'; // Customize the user message color
-            document.getElementById('chatContent').appendChild(userMessageDiv);
+      function scrollToBottom() {
+        var chatContent = document.getElementById('chatContent');
+        chatContent.scrollTop = chatContent.scrollHeight;
+      }
 
-            // Display a placeholder bot response
-            var botMessageDiv = document.createElement('div');
-            botMessageDiv.textContent = 'Bot: I\'m good, how are you?.';
-            botMessageDiv.style.color = 'lightgreen'; // Customize the bot message color
-            document.getElementById('chatContent').appendChild(botMessageDiv);
+      async function fetchChatResponse(userMessage) {
+          const url = 'https://api.together.xyz/v1/chat/completions';
+          //TOGETHER API KEY
+          const apiKey = ''; // Replace with your actual API key
 
-            // Scroll to the bottom of the chat content
-            var chatContent = document.getElementById('chatContent');
-            chatContent.scrollTop = chatContent.scrollHeight;
+          const headers = new Headers({
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+          });
 
-            // Clear the input field
-            this.value = '';
+          // Include chat history in the data object
+          const data = {
+              model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+              max_tokens: 1024,
+              messages: [...chatHistory, {role: 'user', content: userMessage}],
+              "stream_tokens": true
+          };
+
+          const options = {
+              method: 'POST',
+              headers,
+              body: JSON.stringify(data)
+          };
+
+
+          const response1 = await fetchEventSource(url, {options,
+            onmessage(ev) {
+                console.log(ev.data);
+            }
+          });
+
+          const response = await fetch(url, options);
+          const result = await response.json();
+          
+          // Assuming the API returns a single response message
+          return result.choices[0].message.content; // Adjust based on actual API response structure
+      }
+
+
+      document.getElementById('chatInput').addEventListener('keypress', async function(event) {
+          if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent form submission if your input is in a form
+
+            var message = this.value.trim();
+            if (message) {
+              displayUserMessage(message);
+              console.log("Calling together...")
+              try {
+                const response = await fetchChatResponse(message);
+                displayBotResponse(response);
+              } catch (error) {
+                console.error('Chat API Error:', error);
+                displayBotResponse("Sorry, I can't respond right now.");
+              }
+              console.log("Called together...")
+              this.value = ''; // Clear the input field
+            }
           }
-        }
-      });
+        });
 
     </script>
 
