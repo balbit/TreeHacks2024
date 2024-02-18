@@ -13,6 +13,7 @@
 			content="black-translucent"
 		/>
 
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
 		<style>
 			body {
@@ -221,6 +222,51 @@
       box-sizing: border-box;
     }
 
+	#title-box {
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.bold-text {
+	font-weight: 700; /* Bold */
+	}
+
+	.extra-bold-text {
+	font-weight: 800; /* ExtraBold */
+	}	
+
+	#fancy-title {
+		position: absolute;
+		top: 15%; /* Adjust the position as needed */
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 180px;
+		font-weight: bold;
+		color: #FFF; 
+		text-shadow: 0 0 180px rgba(0,0,0,0.6);
+		z-index: 10;
+	}
+
+
+	#fancy-title span {
+	background: linear-gradient(to right, rgb(52, 180, 222), green, white);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	display: inline; /* or 'block' depending on layout needs */
+	}
+
+	#subtitle {
+		position: absolute;
+		top: 40%; /* Adjust the position as needed */
+		left: 50%;
+		transform: translateX(-50%);
+		opacity: 0;
+		transition: opacity 1s;
+		font-size: 25px;
+		font-weight: 300; 
+		text-shadow: 0 0 180px rgba(0,0,0,0.6);
+		z-index: 10;
+	}
 
 
 		</style>
@@ -257,7 +303,40 @@
 		</div>
 		<script src="maings.js"></script>
 
+	<div id="title-box">
+		<div id="fancy-title"><span>Eco</span>Drone</div>
+		<div id="subtitle">Building the Future of Structural Investigation</div>
+	</div>
 
+	<script>
+		const subtitles = [
+		  "Preventing Ecological Hazards, One Drone at a Time",
+		  "Gaussian Splat Models for Real Time Risk Assessment",
+		  "Agentic VLLM-powered Drone Navigation",
+		];
+		let currentSubtitleIndex = 0;
+	  
+		const subtitleElement = document.getElementById('subtitle');
+	  
+		function updateSubtitle() {
+		  subtitleElement.style.opacity = 0;
+		  setTimeout(() => {
+			currentSubtitleIndex = (currentSubtitleIndex + 1) % subtitles.length;
+			subtitleElement.textContent = subtitles[currentSubtitleIndex];
+			subtitleElement.style.opacity = 1;
+		  }, 500); // Halfway through the interval to match the fade out
+		}
+	  
+		// Initial call to set the first subtitle after 1 second (for the fade-in effect)
+		setTimeout(() => {
+		  subtitleElement.style.opacity = 1;
+		}, 1000);
+	  
+		setInterval(updateSubtitle, 5000); // Change subtitle every 5 seconds
+	  </script>
+	  
+
+	  
     <div id="chatBox">
       <div id="chatHeader">Chat</div>
       <div id="chatContent"></div>
