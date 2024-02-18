@@ -340,6 +340,9 @@ function createWorker(self) {
     const f_buffer = new Float32Array(buffer);
     const u_buffer = new Uint8Array(buffer);
 
+    const REMOVE_OUTLIERS = true;
+    const RADIUS_LIM = 2.0;
+
     var texwidth = 1024 * 2; // Set to your desired width
     var texheight = Math.ceil((2 * vertexCount) / texwidth); // Set to your desired height
     var texdata = new Uint32Array(texwidth * texheight * 4); // 4 components per pixel (RGBA)
@@ -356,11 +359,34 @@ function createWorker(self) {
       texdata_f[8 * i + 1] = f_buffer[8 * i + 1];
       texdata_f[8 * i + 2] = f_buffer[8 * i + 2];
 
+      var dis_from_center = Math.sqrt(
+        (f_buffer[8 * i + 0] - 0.0) * (f_buffer[8 * i + 0] - 0.0) +
+        (f_buffer[8 * i + 1] - 0.0) * (f_buffer[8 * i + 1] - 0.0) +
+        (f_buffer[8 * i + 2] - 0.0) * (f_buffer[8 * i + 2] - 0.0)
+      )
+      
+      var out_of_bounds = dis_from_center > RADIUS_LIM && REMOVE_OUTLIERS;
+
       // r, g, b, a
       texdata_c[4 * (8 * i + 7) + 0] = u_buffer[32 * i + 24 + 0];
       texdata_c[4 * (8 * i + 7) + 1] = u_buffer[32 * i + 24 + 1];
       texdata_c[4 * (8 * i + 7) + 2] = u_buffer[32 * i + 24 + 2];
       texdata_c[4 * (8 * i + 7) + 3] = u_buffer[32 * i + 24 + 3];
+
+      var tot_brightness = (
+        texdata_c[4 * (8 * i + 7) + 0] +
+        texdata_c[4 * (8 * i + 7) + 1] +
+        texdata_c[4 * (8 * i + 7) + 2]
+      )
+
+      var too_bright = tot_brightness > 400 && REMOVE_OUTLIERS;
+
+      if (out_of_bounds && too_bright) {
+        texdata_c[4 * (8 * i + 7) + 0] = 0;
+        texdata_c[4 * (8 * i + 7) + 1] = 0;
+        texdata_c[4 * (8 * i + 7) + 2] = 0;
+        texdata_c[4 * (8 * i + 7) + 3] = 0;
+      }
 
       // quaternions
       let scale = [
@@ -718,10 +744,11 @@ void main () {
 
 `.trim();
 
-let defaultViewMatrix = [
-  0.47, 0.04, 0.88, 0, -0.11, 0.99, 0.02, 0, -0.88, -0.11, 0.47, 0, 0.07, 0.03,
-  6.55, 1,
-];
+let defaultViewMatrix = [ 0.04, -0.47,  0.88,  0., 0.99,  0.11,  0.02,  0., -0.11,  0.88,  0.47,  0., 0.03, -0.07,  6.55,  1.  ];
+// let defaultViewMatrix = [
+//   0.47, 0.04, 0.88, 0, -0.11, 0.99, 0.02, 0, -0.88, -0.11, 0.47, 0, 0.07, 0.03,
+//   6.55, 1,
+// ];
 let viewMatrix = defaultViewMatrix;
 async function main() {
   let carousel = true;
