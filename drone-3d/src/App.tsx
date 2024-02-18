@@ -16,7 +16,7 @@ function App() {
     setChatInput(e.target.value);
   };
   const url = 'https://api.together.xyz/v1/chat/completions';
-  const apiKey = '6dc130236125c9ea0408389e397f422c0646f00714e2fb26abd222a9e0325aef';
+  const apiKey = '';
   const fetchData = async (updatedMessages) => {
     let new_message: ChatMessage = {role: "assistant", content: ""}
     const data = {
